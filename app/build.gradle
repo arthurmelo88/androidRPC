@@ -1,0 +1,57 @@
+apply plugin: 'com.android.application'
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    /**
+     * Use the number of seconds/86400 since Jan 1 2017 as the versionCode.
+     * This lets us upload a new build at most every 86400 seconds for the next 680 years (1 version per day)
+     */
+    def vcode = (int) (((buildTime() / 1000) - 1483236000) / 86400)
+
+
+    defaultConfig {
+        applicationId "eneter.androidrpcclient"
+        versionCode vcode
+        versionName = new Date(buildTime()).format("yyyy.MM.dd")
+        targetSdkVersion 25
+        minSdkVersion 14
+        buildConfigField "long", "LASTBUILD", buildTime() + "L"
+    }
+
+    buildTypes {
+
+        release {
+            debuggable false
+            minifyEnabled true
+            proguardFile 'proguard.conf'
+        }
+
+        debug {
+            debuggable true
+            jniDebuggable true
+            minifyEnabled false
+            //  signingConfig signingConfigs.debug
+        }
+
+
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+}
+
+static def buildTime() {
+    return Calendar.getInstance(TimeZone.getTimeZone("America/Sao_Paulo")).getTimeInMillis()
+}
+
+dependencies {
+    compile files('libs/eneter-messaging-android-7.0.1.jar')
+}
